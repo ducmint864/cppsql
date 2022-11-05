@@ -21,9 +21,18 @@ int main(int argc, const char **argv)
 	const std::string pass     =     AUTHENTICATION_STRING;
 	const std::string database =     DATABASE;
 
-	sql::Driver* driver =       get_driver_instance();
-	std::unique_ptr<sql::Connection> con(driver->connect(HOST, USER, AUTHENTICATION_STRING));
-	con->setSchema(database);
+    sql::Driver* driver;
+    sql::Connection* conn;
+    sql::Statement* stmt;
+    sql::PreparedStatement* pstmt;
+    sql::ResultSet* res;
 
+    driver = get_driver_instance();
+    conn = driver->connect(url, user, pass);
+    conn->setSchema(database);
+    stmt = conn->createStatement();
+
+    res = stmt->executeQuery("SELECT * FROM ledgerOne");
+    std::cout << res;
     return 0;    
 }
