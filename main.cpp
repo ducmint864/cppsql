@@ -13,7 +13,7 @@ const string SQL_USER                  = "root";
 const string SQL_AUTHENTICATION_STRING = "dm";
 const string SQL_DATABASE              = "transactions_info";              
 
-void TrimWord(std::string& word)
+void Trim(std::string& word)
 {
     if (word.empty()) return;
 
@@ -74,7 +74,8 @@ try {
         cout << "\n-------Library----------------------------------------------------------------------------" << endl;
         cout << "Library menu: (s)how all books, (b)orrow book, (q)uit" << endl;
         cout << ">>> ";
-        scanf(" %c", &option);
+        cin >> option;
+        cin.ignore();
         switch (option) {
             case 's':
             case 'S':
@@ -108,15 +109,13 @@ try {
             case 'b':
             case 'B':
                 cout << ">>> Search for books you want to borrow: ";
-                cin >> foo;
-                // TrimWord(foo);
-                cout << foo;
-                // query = "SELECT * FROM books WHERE ten_sach='" + foo + "'";
-                query = "SELECT * FROM books WHERE ten_sach='The subtle art of not giving a f'";
+                getline(cin, foo);
+                Trim(foo);
+                query = "SELECT * FROM books WHERE ten_sach='" + foo + "'";
+                // query = "SELECT * FROM books WHERE ten_sach=' subtle art of not giving a f'";
                 pst = conn->prepareStatement(query);
                 res = pst->executeQuery();
-                res->first();
-                if (res->getString("ten_sach") == "") { //khong tim thay sach
+                if(!res->first()) { //khong tim thay sach
                     cout << "No result found for \"" << foo << "\"" << endl;
                 }
                 else if (res->getBoolean("tinh_trang") == 0) { //tim thay sach nhung sach da duoc muon
@@ -131,13 +130,13 @@ try {
                         cin >> option;
                         if (option == 'y') {
                             //update in the book table
-                            // query = "UPDATE books SET tinh_trang=0 WHERE ten_sach='" + foo + "'";
-                            query = "UPDATE books SET tinh_trang=0 WHERE ten_sach='The subtle art of not giving a f'";
+                            query = "UPDATE books SET tinh_trang=0 WHERE ten_sach='" + foo + "'";
+                            // query = "UPDATE books SET tinh_trang=0 WHERE ten_sach='The subtle art of not giving a f'";
                             st = conn->createStatement();
                             st->execute(query);
                             // update in the library table
-                            // query = "INSERT INTO library (nguoi_muon, ten_sach) VALUES ('" + user.fullName + "', " + "'" + foo + "')";
-                            query = "INSERT INTO library (nguoi_muon, ten_sach) VALUES ('Nguyen Do Duc Minh', 'The subtle art of not giving a f')";
+                            query = "INSERT INTO library (nguoi_muon, ten_sach) VALUES ('" + user.fullName + "', " + "'" + foo + "')";
+                            // query = "INSERT INTO library (nguoi_muon, ten_sach) VALUES ('Nguyen Do Duc Minh', 'The subtle art of not giving a f')";
                             st->execute(query);
                             cout << "Borrow successful! This book is temporarily yours" << endl;
                         }
